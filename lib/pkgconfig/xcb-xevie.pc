@@ -1,0 +1,11 @@
+prefix=/import/adams/2/z5080334/local
+exec_prefix=${prefix}
+libdir=${exec_prefix}/lib
+includedir=${prefix}/include
+
+Name: XCB Xevie
+Description: XCB Xevie Extension
+Version: 1.11
+Requires: xcb
+Libs: -L${libdir} -lxcb-xevie
+Cflags: -I${includedir}
