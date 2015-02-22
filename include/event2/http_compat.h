@@ -24,17 +24,14 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-#ifndef _EVENT_H_
-#define _EVENT_H_
+#ifndef _EVENT2_HTTP_COMPAT_H_
+#define _EVENT2_HTTP_COMPAT_H_
 
-/** @file event.h
+/** @file event2/http_compat.h
 
-  A library for writing event-driven network servers.
+  Potentially non-threadsafe versions of the functions in http.h: provided
+  only for backwards compatibility.
 
-  The <event.h> header is deprecated in Libevent 2.0 and later; please
-  use <event2/event.h> instead.  Depending on what functionality you
-  need, you may also want to include more of the other event2/
-  headers.
  */
 
 #ifdef __cplusplus
@@ -48,38 +45,46 @@ extern "C" {
 #ifdef _EVENT_HAVE_SYS_TIME_H
 #include <sys/time.h>
 #endif
-#ifdef _EVENT_HAVE_STDINT_H
-#include <stdint.h>
-#endif
-#include <stdarg.h>
 
 /* For int types. */
-#include <evutil.h>
+#include <event2/util.h>
 
-#ifdef WIN32
-#ifndef WIN32_LEAN_AND_MEAN
-#define WIN32_LEAN_AND_MEAN
-#endif
-#include <winsock2.h>
-#include <windows.h>
-#undef WIN32_LEAN_AND_MEAN
-typedef unsigned char u_char;
-typedef unsigned short u_short;
-#endif
+/**
+ * Start an HTTP server on the specified address and port
+ *
+ * @deprecated It does not allow an event base to be specified
+ *
+ * @param address the address to which the HTTP server should be bound
+ * @param port the port number on which the HTTP server should listen
+ * @return an struct evhttp object
+ */
+struct evhttp *evhttp_start(const char *address, unsigned short port);
 
-#include <event2/event_struct.h>
-#include <event2/event.h>
-#include <event2/event_compat.h>
-#include <event2/buffer.h>
-#include <event2/buffer_compat.h>
-#include <event2/bufferevent.h>
-#include <event2/bufferevent_struct.h>
-#include <event2/bufferevent_compat.h>
-#include <event2/tag.h>
-#include <event2/tag_compat.h>
+/**
+ * A connection object that can be used to for making HTTP requests.  The
+ * connection object tries to establish the connection when it is given an
+ * http request object.
+ *
+ * @deprecated It does not allow an event base to be specified
+ */
+struct evhttp_connection *evhttp_connection_new(
+	const char *address, unsigned short port);
+
+/**
+ * Associates an event base with the connection - can only be called
+ * on a freshly created connection object that has not been used yet.
+ *
+ * @deprecated XXXX Why?
+ */
+void evhttp_connection_set_base(struct evhttp_connection *evcon,
+    struct event_base *base);
+
+
+/** Returns the request URI */
+#define evhttp_request_uri evhttp_request_get_uri
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* _EVENT_H_ */
+#endif /* _EVENT2_EVENT_COMPAT_H_ */
